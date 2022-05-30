@@ -13,47 +13,74 @@ import (
 	"github.com/ejuju/wtf/internal/random"
 )
 
+type Result struct {
+	number int
+	img    image.Image
+}
+
 func main() {
+	// start time for timer
 	start := time.Now()
 
+	// open input image file
 	f, err := os.Open("test.jpg")
 	if err != nil {
 		panic(err)
 	}
 	defer f.Close()
 
+	// decode input image
 	baseimg, err := jpeg.Decode(f)
 	if err != nil {
 		panic(err)
 	}
 
-	outputImages := []image.Image{}
-
-	numFrames := 5
+	// generate images concurrently
+	numFrames := 50
+	outputImages := make([]image.Image, numFrames)
+	resultChan := make(chan Result, numFrames)
+	defer close(resultChan)
 	for i := 0; i < numFrames; i++ {
-		noiseGenerator := random.NewAquilaxPerlinNoiseGenerator(random.AquilaxPerlinNoiseGeneratorConfig{
-			Alpha: 1,
-			Beta:  1,
-			N:     int32(i),
-			Seed:  100,
-		})
+		go func(i int) {
+			noiseGenerator := random.NewAquilaxPerlinNoiseGenerator(random.AquilaxPerlinNoiseGeneratorConfig{
+				Alpha: 2,
+				Beta:  2,
+				N:     1,
+				Seed:  100,
+			})
 
-		perlinNoiseModifier := imgutil.NewPerlinNoisePixelModifier(imgutil.PerlinNoisePixelModifierConfig{
-			PerlinNoiseGenerator: noiseGenerator,
-		})
+			perlinNoiseModifier := imgutil.NewPerlinNoisePixelModifier(imgutil.PerlinNoisePixelModifierConfig{
+				PerlinNoiseGenerator: noiseGenerator,
+				Amplitude:            300 * (float64(i) / float64(numFrames)),
+			})
 
-		outputImages = append(outputImages, imgutil.ModifyImage(baseimg, perlinNoiseModifier))
+			resultChan <- Result{number: i, img: imgutil.ModifyImage(baseimg, perlinNoiseModifier)}
+		}(i)
 	}
 
-	outputGif, err := gifutil.ImagesToGIF(500, outputImages...)
+	results := map[int]image.Image{}
+	for i := 0; i < numFrames; i++ {
+		result := <-resultChan
+		results[result.number] = result.img
+	}
+
+	// sort images from results
+	for i, result := range results {
+		outputImages[i] = result
+	}
+
+	// encode images to GIF
+	outputGif, err := gifutil.ImagesToGIF(1, outputImages...)
 	if err != nil {
 		panic(err)
 	}
 
+	// save GIF to file on local disk
 	err = gifutil.EncodeAndSaveToFile(outputGif, strconv.Itoa(int(time.Now().Unix()))+".gif")
 	if err != nil {
 		panic(err)
 	}
 
-	fmt.Printf("done in %vms\n", time.Now().Sub(start).Milliseconds())
+	// print total execution time
+	fmt.Printf("done in %vs\n", time.Now().Sub(start).Seconds())
 }

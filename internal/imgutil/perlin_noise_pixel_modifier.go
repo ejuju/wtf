@@ -13,6 +13,7 @@ type PerlinNoisePixelModifier struct {
 
 type PerlinNoisePixelModifierConfig struct {
 	PerlinNoiseGenerator random.PerlinNoiseGenerator
+	Amplitude            float64
 }
 
 func NewPerlinNoisePixelModifier(config PerlinNoisePixelModifierConfig) *PerlinNoisePixelModifier {
@@ -23,7 +24,7 @@ func (p *PerlinNoisePixelModifier) ModifyPixel(img image.Image, point image.Poin
 	var divideBy float64 = 130
 	x := float64(point.X)
 	y := float64(point.Y)
-	noiseval := (p.config.PerlinNoiseGenerator.Get2D(x/divideBy, y/divideBy)) * 100
+	noiseval := (p.config.PerlinNoiseGenerator.Get2D(x/divideBy, y/divideBy)) * p.config.Amplitude
 
 	newX := int(x + noiseval)
 	newY := int(y + noiseval)
