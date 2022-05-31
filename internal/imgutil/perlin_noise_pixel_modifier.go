@@ -12,8 +12,9 @@ type PerlinNoisePixelModifier struct {
 }
 
 type PerlinNoisePixelModifierConfig struct {
-	PerlinNoiseGenerator random.PerlinNoiseGenerator
-	Amplitude            float64
+	PerlinNoiseGenerator    random.PerlinNoiseGenerator
+	Amplitude               float64
+	OutOfFrameFallbackColor color.Color
 }
 
 func NewPerlinNoisePixelModifier(config PerlinNoisePixelModifierConfig) *PerlinNoisePixelModifier {
@@ -32,7 +33,7 @@ func (p *PerlinNoisePixelModifier) ModifyPixel(img image.Image, point image.Poin
 	// use fallback color if pixel is out of bounds
 	bounds := img.Bounds()
 	if newX <= bounds.Min.X || newX >= bounds.Max.X || newY <= bounds.Min.Y || newY >= bounds.Max.Y {
-		return color.RGBA{0, 0, 0, 0}
+		return p.config.OutOfFrameFallbackColor
 	}
 
 	return img.At(newX, newY)
