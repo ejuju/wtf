@@ -16,9 +16,6 @@ type MakeFuncResult struct {
 }
 
 type MakePerformanceReport struct {
-	NumPixels               int
-	NumFrames               int
-	TotalPixels             int
 	PixelsPerMillisecond    int
 	FrameGenerationDuration time.Duration
 	FrameEncodingDuration   time.Duration

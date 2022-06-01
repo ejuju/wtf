@@ -6,8 +6,8 @@ import (
 	"math"
 	"time"
 
-	"github.com/ejuju/wtf/internal/imgutil"
-	"github.com/ejuju/wtf/internal/random"
+	"github.com/ejuju/wtf/pkg/imgutil"
+	"github.com/ejuju/wtf/pkg/random"
 )
 
 type PerlinNoiseGIFMaker struct {
@@ -15,9 +15,12 @@ type PerlinNoiseGIFMaker struct {
 }
 
 type PerlinNoiseGIFMakerConfig struct {
-	OutOfFrameFallbackColor color.RGBA
-	MaxAmplitude            float64
-	Generator               random.PerlinNoiseGenerator
+	FrameDelay               int
+	OutOfFrameFallbackColor  color.RGBA
+	MaxAmplitude             float64
+	Generator                random.PerlinNoiseGenerator
+	ImageModificationOptions imgutil.ImageModificationOptions
+	PositionGapDivider       float64
 }
 
 func NewPerlinNoiseGIFMaker(config PerlinNoiseGIFMakerConfig) *PerlinNoiseGIFMaker {
@@ -39,12 +42,14 @@ func (pngm *PerlinNoiseGIFMaker) Generate(img image.Image, numFrames int) MakeFu
 	// generate each image frame concurrently
 	for i := 0; i < numFrames; i++ {
 		go func(i int) {
+			step := float64(i) / float64(numFrames)
 			perlinNoiseModifier := imgutil.NewPerlinNoisePixelModifier(imgutil.PerlinNoisePixelModifierConfig{
 				OutOfFrameFallbackColor: pngm.config.OutOfFrameFallbackColor,
-				Amplitude:               math.Abs(-pngm.config.MaxAmplitude + (2*pngm.config.MaxAmplitude)*(float64(i)/float64(numFrames))),
+				Amplitude:               pngm.config.MaxAmplitude * (math.Cos(2*math.Pi*step)/2 + 0.5),
 				PerlinNoiseGenerator:    pngm.config.Generator,
+				PositionGapDivider:      pngm.config.PositionGapDivider,
 			})
-			resultChan <- Result{number: i, img: imgutil.ModifyImage(img, perlinNoiseModifier)}
+			resultChan <- Result{number: i, img: imgutil.ModifyImage(img, perlinNoiseModifier, pngm.config.ImageModificationOptions)}
 		}(i)
 	}
 
@@ -64,7 +69,7 @@ func (pngm *PerlinNoiseGIFMaker) Generate(img image.Image, numFrames int) MakeFu
 	endFrameGeneration := time.Now()
 
 	// encode images to GIF
-	outputGif, err := ImagesToGIF(1, outputImages...)
+	outputGif, err := ImagesToGIF(pngm.config.FrameDelay, outputImages...)
 	if err != nil {
 		panic(err)
 	}
@@ -79,9 +84,6 @@ func (pngm *PerlinNoiseGIFMaker) Generate(img image.Image, numFrames int) MakeFu
 	makeFuncResult := MakeFuncResult{
 		GIF: outputGif,
 		PerformanceReport: MakePerformanceReport{
-			NumPixels:               numPixels,
-			NumFrames:               numFrames,
-			TotalPixels:             totalPixels,
 			FrameGenerationDuration: endFrameGeneration.Sub(startFrameGeneration),
 			FrameEncodingDuration:   endFrameEncoding.Sub(endFrameGeneration),
 			PixelsPerMillisecond:    totalPixels / int(endFrameEncoding.Sub(startFrameGeneration).Milliseconds()),
