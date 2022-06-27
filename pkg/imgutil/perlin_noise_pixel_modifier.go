@@ -12,7 +12,7 @@ type PerlinNoisePixelModifier struct {
 }
 
 type PerlinNoisePixelModifierConfig struct {
-	PerlinNoiseGenerator    random.PerlinNoiseGenerator
+	PerlinNoiseGenerator    random.NoiseGenerator
 	Amplitude               float64     // recommended: 100
 	OutOfFrameFallbackColor color.Color // recommended: black or white
 	PositionGapDivider      float64     // recommended: 50

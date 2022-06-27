@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"image/jpeg"
+	"os"
 	"strconv"
 	"time"
 
@@ -13,27 +15,26 @@ import (
 
 func main() {
 	start := time.Now()
+	var err error
 
 	// from monochrome image
-	width := 1024
-	height := width
-	baseimg := imgutil.NewMonochromeImage(colors.White, width, height)
+	// baseimg := imgutil.NewMonochromeImage(colors.White, 1024, 1024)
 
-	// // from local image
-	// f, err := os.Open("./test.jpg")
-	// if err != nil {
-	// 	panic(err)
-	// }
-	// baseimg, err := jpeg.Decode(f)
-	// if err != nil {
-	// 	panic(err)
-	// }
+	// from local image
+	f, err := os.Open("./input/alexandre-brondino.jpg")
+	if err != nil {
+		panic(err)
+	}
+	baseimg, err := jpeg.Decode(f)
+	if err != nil {
+		panic(err)
+	}
 
 	// calculate stats
-	numFrames := 100
+	numFrames := 20
 	// imgbounds := baseimg.Bounds()
-	// width := imgbounds.Dx()
-	// height := imgbounds.Dy()
+	width := baseimg.Bounds().Dx()
+	height := baseimg.Bounds().Dy()
 	numPixelsPerFrame := width * height
 	totalPixels := numFrames * numPixelsPerFrame
 	estimatedPixelsPerMillisecond := 1000
@@ -58,18 +59,13 @@ func main() {
 
 	// use gif generator
 	result := gifutil.NewPerlinNoiseGIFMaker(gifutil.PerlinNoiseGIFMakerConfig{
-		ImageModificationOptions: imgutil.ImageModificationOptions{Padding: 0.069},
+		ImageModificationOptions: imgutil.ImageModificationOptions{Padding: 0.0},
 		FrameDelay:               0,
-		MaxAmplitude:             1024,
-		PositionGapDivider:       20.67,
+		MaxAmplitude:             200,
+		PositionGapDivider:       500.65,
 		OutOfFrameFallbackColor:  colors.Black,
 		Generator:                random.NewOpenSimplexNoiseGenerator(random.OpenSimplexNoiseGeneratorConfig{Seed: 0}),
-		// Generator: random.NewAquilaxPerlinNoiseGenerator(random.AquilaxPerlinNoiseGeneratorConfig{
-		// 	Alpha: 2,
-		// 	Beta:  2,
-		// 	N:     4,
-		// 	Seed:  0,
-		// }),
+		// Generator:                random.NewAquilaxNoiseGenerator(random.AquilaxNoiseGeneratorConfig{Alpha: 2, Beta: 2, N: 4, Seed: 0}),
 	}).Generate(baseimg, numFrames)
 
 	// log performance report
@@ -83,7 +79,7 @@ func main() {
 	)
 
 	// save GIF to file on local disk
-	err := gifutil.EncodeAndSaveToFile(result.GIF, strconv.Itoa(int(time.Now().Unix()))+".gif")
+	err = gifutil.EncodeAndSaveToFile(result.GIF, "./output/"+strconv.Itoa(int(time.Now().Unix()))+".gif")
 	if err != nil {
 		panic(err)
 	}

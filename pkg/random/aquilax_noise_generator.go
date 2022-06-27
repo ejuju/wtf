@@ -2,7 +2,7 @@ package random
 
 import "github.com/aquilax/go-perlin"
 
-type AquilaxPerlinNoiseGenerator struct {
+type AquilaxNoiseGenerator struct {
 	p *perlin.Perlin
 }
 
@@ -15,27 +15,27 @@ type AquilaxPerlinNoiseGenerator struct {
 // - N is the number of iterations
 //
 // - Seed is the math.rand seed value to use
-type AquilaxPerlinNoiseGeneratorConfig struct {
+type AquilaxNoiseGeneratorConfig struct {
 	Alpha float64
 	Beta  float64
 	N     int32
 	Seed  int64
 }
 
-func NewAquilaxPerlinNoiseGenerator(config AquilaxPerlinNoiseGeneratorConfig) *AquilaxPerlinNoiseGenerator {
-	return &AquilaxPerlinNoiseGenerator{
+func NewAquilaxNoiseGenerator(config AquilaxNoiseGeneratorConfig) *AquilaxNoiseGenerator {
+	return &AquilaxNoiseGenerator{
 		p: perlin.NewPerlin(config.Alpha, config.Beta, config.N, config.Seed),
 	}
 }
 
-func (a *AquilaxPerlinNoiseGenerator) Get1D(x float64) float64 {
+func (a *AquilaxNoiseGenerator) Get1D(x float64) float64 {
 	return a.p.Noise1D(x)
 }
 
-func (a *AquilaxPerlinNoiseGenerator) Get2D(x, y float64) float64 {
+func (a *AquilaxNoiseGenerator) Get2D(x, y float64) float64 {
 	return a.p.Noise2D(x, y)
 }
 
-func (a *AquilaxPerlinNoiseGenerator) Get3D(x, y, z float64) float64 {
+func (a *AquilaxNoiseGenerator) Get3D(x, y, z float64) float64 {
 	return a.p.Noise3D(x, y, z)
 }

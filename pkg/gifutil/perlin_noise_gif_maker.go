@@ -18,7 +18,7 @@ type PerlinNoiseGIFMakerConfig struct {
 	FrameDelay               int
 	OutOfFrameFallbackColor  color.RGBA
 	MaxAmplitude             float64
-	Generator                random.PerlinNoiseGenerator
+	Generator                random.NoiseGenerator
 	ImageModificationOptions imgutil.ImageModificationOptions
 	PositionGapDivider       float64
 }
