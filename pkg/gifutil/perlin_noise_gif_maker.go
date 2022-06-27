@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/ejuju/wtf/pkg/imgutil"
-	"github.com/ejuju/wtf/pkg/random"
+	"github.com/ejuju/wtf/pkg/noise"
 )
 
 type PerlinNoiseGIFMaker struct {
@@ -18,7 +18,7 @@ type PerlinNoiseGIFMakerConfig struct {
 	FrameDelay               int
 	OutOfFrameFallbackColor  color.RGBA
 	MaxAmplitude             float64
-	Generator                random.NoiseGenerator
+	Generator                noise.Generator
 	ImageModificationOptions imgutil.ImageModificationOptions
 	PositionGapDivider       float64
 }
@@ -43,13 +43,13 @@ func (pngm *PerlinNoiseGIFMaker) Generate(img image.Image, numFrames int) MakeFu
 	for i := 0; i < numFrames; i++ {
 		go func(i int) {
 			step := float64(i) / float64(numFrames)
-			perlinNoiseModifier := imgutil.NewPerlinNoisePixelModifier(imgutil.PerlinNoisePixelModifierConfig{
+			noiseModifier := imgutil.NewNoisePixelModifier(imgutil.NoisePixelModifierConfig{
 				OutOfFrameFallbackColor: pngm.config.OutOfFrameFallbackColor,
 				Amplitude:               pngm.config.MaxAmplitude * (math.Cos(2*math.Pi*step)/2 + 0.5),
-				PerlinNoiseGenerator:    pngm.config.Generator,
+				NoiseGenerator:          pngm.config.Generator,
 				PositionGapDivider:      pngm.config.PositionGapDivider,
 			})
-			resultChan <- Result{number: i, img: imgutil.ModifyImage(img, perlinNoiseModifier, pngm.config.ImageModificationOptions)}
+			resultChan <- Result{number: i, img: imgutil.ModifyImage(img, noiseModifier, pngm.config.ImageModificationOptions)}
 		}(i)
 	}
 

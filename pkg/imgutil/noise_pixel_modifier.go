@@ -4,28 +4,28 @@ import (
 	"image"
 	"image/color"
 
-	"github.com/ejuju/wtf/pkg/random"
+	"github.com/ejuju/wtf/pkg/noise"
 )
 
-type PerlinNoisePixelModifier struct {
-	config PerlinNoisePixelModifierConfig
+type NoisePixelModifier struct {
+	config NoisePixelModifierConfig
 }
 
-type PerlinNoisePixelModifierConfig struct {
-	PerlinNoiseGenerator    random.NoiseGenerator
+type NoisePixelModifierConfig struct {
+	NoiseGenerator          noise.Generator
 	Amplitude               float64     // recommended: 100
 	OutOfFrameFallbackColor color.Color // recommended: black or white
 	PositionGapDivider      float64     // recommended: 50
 }
 
-func NewPerlinNoisePixelModifier(config PerlinNoisePixelModifierConfig) *PerlinNoisePixelModifier {
-	return &PerlinNoisePixelModifier{config: config}
+func NewNoisePixelModifier(config NoisePixelModifierConfig) *NoisePixelModifier {
+	return &NoisePixelModifier{config: config}
 }
 
-func (p *PerlinNoisePixelModifier) ModifyPixel(img image.Image, point image.Point) color.Color {
+func (p *NoisePixelModifier) ModifyPixel(img image.Image, point image.Point) color.Color {
 	x := float64(point.X)
 	y := float64(point.Y)
-	noiseval := (p.config.PerlinNoiseGenerator.Get2D(x/p.config.PositionGapDivider, y/p.config.PositionGapDivider)) * p.config.Amplitude
+	noiseval := (p.config.NoiseGenerator.Get2D(x/p.config.PositionGapDivider, y/p.config.PositionGapDivider)) * p.config.Amplitude
 
 	newX := int(x + noiseval)
 	newY := int(y + noiseval)

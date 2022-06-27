@@ -10,7 +10,7 @@ import (
 	"github.com/ejuju/wtf/pkg/colors"
 	"github.com/ejuju/wtf/pkg/gifutil"
 	"github.com/ejuju/wtf/pkg/imgutil"
-	"github.com/ejuju/wtf/pkg/random"
+	"github.com/ejuju/wtf/pkg/noise"
 )
 
 func main() {
@@ -64,8 +64,8 @@ func main() {
 		MaxAmplitude:             200,
 		PositionGapDivider:       500.65,
 		OutOfFrameFallbackColor:  colors.Black,
-		Generator:                random.NewOpenSimplexNoiseGenerator(random.OpenSimplexNoiseGeneratorConfig{Seed: 0}),
-		// Generator:                random.NewAquilaxNoiseGenerator(random.AquilaxNoiseGeneratorConfig{Alpha: 2, Beta: 2, N: 4, Seed: 0}),
+		Generator:                noise.NewOjracGenerator(noise.OjracGeneratorConfig{Seed: 0}),
+		// Generator:                noise.NewAquilaxNoiseGenerator(noise.AquilaxNoiseGeneratorConfig{Alpha: 2, Beta: 2, N: 4, Seed: 0}),
 	}).Generate(baseimg, numFrames)
 
 	// log performance report
