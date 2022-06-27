@@ -1,4 +1,5 @@
 
 Roadmap:
-- [ ] Add perlin noise implementation from: github.com/josebalius/go-noise
 - [ ] Write unit tests
+- [ ] Combining two pictures with noise
+- [ ] Sine function (wavy GIFs)
