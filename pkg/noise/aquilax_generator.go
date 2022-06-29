@@ -23,17 +23,19 @@ type AquilaxGeneratorConfig struct {
 }
 
 func NewAquilaxGenerator(config AquilaxGeneratorConfig) *AquilaxGenerator {
+	if config.Alpha <= 0 {
+		config.Alpha = 2
+	}
+	if config.Beta <= 0 {
+		config.Beta = 2
+	}
+	if config.N <= 0 {
+		config.N = 1
+	}
+
 	return &AquilaxGenerator{
 		p: aquilaxnoise.NewPerlin(config.Alpha, config.Beta, config.N, config.Seed),
 	}
-}
-
-func (a *AquilaxGenerator) Get1D(x float64) float64 {
-	return a.p.Noise1D(x)
-}
-
-func (a *AquilaxGenerator) Get2D(x, y float64) float64 {
-	return a.p.Noise2D(x, y)
 }
 
 func (a *AquilaxGenerator) Get3D(x, y, z float64) float64 {

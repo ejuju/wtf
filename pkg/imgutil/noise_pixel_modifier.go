@@ -25,7 +25,7 @@ func NewNoisePixelModifier(config NoisePixelModifierConfig) *NoisePixelModifier 
 func (p *NoisePixelModifier) ModifyPixel(img image.Image, point image.Point) color.Color {
 	x := float64(point.X)
 	y := float64(point.Y)
-	noiseval := (p.config.NoiseGenerator.Get2D(x/p.config.PositionGapDivider, y/p.config.PositionGapDivider)) * p.config.Amplitude
+	noiseval := (p.config.NoiseGenerator.Get3D(x/p.config.PositionGapDivider, y/p.config.PositionGapDivider, 0)) * p.config.Amplitude
 
 	newX := int(x + noiseval)
 	newY := int(y + noiseval)

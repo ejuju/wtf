@@ -64,7 +64,7 @@ func main() {
 		MaxAmplitude:             200,
 		PositionGapDivider:       500.65,
 		OutOfFrameFallbackColor:  colors.Black,
-		Generator:                noise.NewOjracGenerator(noise.OjracGeneratorConfig{Seed: 0}),
+		Generator:                noise.NewOjracGenerator(0),
 		// Generator:                noise.NewAquilaxNoiseGenerator(noise.AquilaxNoiseGeneratorConfig{Alpha: 2, Beta: 2, N: 4, Seed: 0}),
 	}).Generate(baseimg, numFrames)
 
