@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"image/gif"
 	"image/jpeg"
 	"os"
 	"strconv"
@@ -78,9 +79,14 @@ func main() {
 	)
 
 	// save GIF to file on local disk
-	err = gifutil.EncodeAndSaveToFile(result.GIF, "./output/"+strconv.Itoa(int(time.Now().Unix()))+".gif")
+	f, err = os.Create("./output/" + strconv.Itoa(int(time.Now().Unix())) + ".gif")
 	if err != nil {
 		panic(err)
 	}
+	err = gif.EncodeAll(f, result.GIF)
+	if err != nil {
+		panic(err)
+	}
+
 	fmt.Printf("Total duration: %s\n\n", time.Now().Sub(start))
 }
