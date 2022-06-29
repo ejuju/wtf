@@ -32,12 +32,12 @@ func main() {
 
 	// calculate stats
 	numFrames := 20
-	// imgbounds := baseimg.Bounds()
-	width := baseimg.Bounds().Dx()
-	height := baseimg.Bounds().Dy()
+	imgbounds := baseimg.Bounds()
+	width := imgbounds.Dx()
+	height := imgbounds.Dy()
 	numPixelsPerFrame := width * height
 	totalPixels := numFrames * numPixelsPerFrame
-	estimatedPixelsPerMillisecond := 1000
+	estimatedPixelsPerMillisecond := 1500
 	estimatedTotalDuration := time.Duration(totalPixels/estimatedPixelsPerMillisecond) * 1000 * 1000
 
 	fmt.Printf("\n"+
@@ -60,12 +60,11 @@ func main() {
 	// use gif generator
 	result := gifutil.NewPerlinNoiseGIFMaker(gifutil.PerlinNoiseGIFMakerConfig{
 		ImageModificationOptions: imgutil.ImageModificationOptions{Padding: 0.0},
-		FrameDelay:               0,
-		MaxAmplitude:             200,
-		PositionGapDivider:       500.65,
+		MaxAmplitude:             1000,
+		PositionGapDivider:       1000.65,
 		OutOfFrameFallbackColor:  colors.Black,
-		Generator:                noise.NewOjracGenerator(0),
-		// Generator:                noise.NewAquilaxNoiseGenerator(noise.AquilaxNoiseGeneratorConfig{Alpha: 2, Beta: 2, N: 4, Seed: 0}),
+		// Generator: noise.NewAquilaxGenerator(noise.AquilaxGeneratorConfig{Alpha: 2, Beta: 2, N: 4, Seed: 0}),
+		Generator: noise.NewOjracGenerator(0),
 	}).Generate(baseimg, numFrames)
 
 	// log performance report

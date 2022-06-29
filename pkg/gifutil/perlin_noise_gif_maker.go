@@ -15,7 +15,6 @@ type PerlinNoiseGIFMaker struct {
 }
 
 type PerlinNoiseGIFMakerConfig struct {
-	FrameDelay               int
 	OutOfFrameFallbackColor  color.RGBA
 	MaxAmplitude             float64
 	Generator                noise.Generator
@@ -69,7 +68,7 @@ func (pngm *PerlinNoiseGIFMaker) Generate(img image.Image, numFrames int) MakeFu
 	endFrameGeneration := time.Now()
 
 	// encode images to GIF
-	outputGif, err := ImagesToGIF(pngm.config.FrameDelay, outputImages...)
+	outputGif, err := ImagesToGIF(0, outputImages...)
 	if err != nil {
 		panic(err)
 	}
